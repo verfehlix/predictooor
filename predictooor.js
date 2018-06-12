@@ -1,15 +1,31 @@
+// imports
 const program = require('commander')
 const csv = require('csvtojson')
 
+// path to soccer results data
 const csvFilePath = 'results.csv'
 
+// setup command line argument parsing
 program
-  .option('-a, --team1 [string]', 'Team One is [team1]', 'team1')
-  .option('-b, --team2 [string]', 'Team Two is [team2]', 'team2')
+  .option('-a, --team1 [string]', 'Team One is [team1]')
+  .option('-b, --team2 [string]', 'Team Two is [team2]')
   .parse(process.argv)
 
-console.log("\nLooking for matches where %s (Team 1) played %s (Team 2) ...", program.team1, program.team2)
+// abort if no teams were specified
+if(!program.team1 || !program.team2) {
+    console.log("\nPlease specify team1 and team2. For more information, use the -h flag.")
+    return
+}
 
+// run "analysis"
+try{
+    console.log("\nLooking for matches where %s (Team 1) played %s (Team 2) ...", program.team1, program.team2)
+    run()
+} catch(e) {
+    console.error(e)
+}
+
+// "analysis" function
 async function run(){
 
     // get all results from csv
@@ -33,6 +49,7 @@ async function run(){
 
     console.log("Found %i direct matchup(s) between the two teams.", relevantResults.length)
 
+    // if no matchups were found, abort
     if(relevantResults.length === 0) {
         return
     }
@@ -76,6 +93,10 @@ async function run(){
         return element.date.split("-")[0] >= (new Date().getFullYear() - 10)
     })
 
+    let team1winsLast10YearsPercentage
+    let team2winsLast10YearsPercentage
+    let drawsLast10YearsPercentage
+
     if(totalMatchesLast10Years.length === 0) {
         console.log("There were no matches in the last 10 years.")
     } else {
@@ -89,9 +110,9 @@ async function run(){
             return element.date.split("-")[0] >= (new Date().getFullYear() - 10)
         })
 
-        const team1winsLast10YearsPercentage = ((team1winsLast10Years.length / totalMatchesLast10Years.length)*100).toFixed(0)
-        const team2winsLast10YearsPercentage = ((team2winsLast10Years.length / totalMatchesLast10Years.length)*100).toFixed(0)
-        const drawsLast10YearsPercentage = (((totalMatchesLast10Years.length - team1winsLast10Years.length - team2winsLast10Years.length) / totalMatchesLast10Years.length)*100).toFixed(0)
+        team1winsLast10YearsPercentage = ((team1winsLast10Years.length / totalMatchesLast10Years.length)*100).toFixed(0)
+        team2winsLast10YearsPercentage = ((team2winsLast10Years.length / totalMatchesLast10Years.length)*100).toFixed(0)
+        drawsLast10YearsPercentage = (((totalMatchesLast10Years.length - team1winsLast10Years.length - team2winsLast10Years.length) / totalMatchesLast10Years.length)*100).toFixed(0)
 
         console.log("\n%s (Team 1) has won %i times (%s%).", program.team1, team1winsLast10Years.length, team1winsLast10YearsPercentage)
         console.log("%s (Team 2) has won %i times (%s%).", program.team2, team2winsLast10Years.length, team2winsLast10YearsPercentage)
@@ -139,7 +160,7 @@ async function run(){
     console.log("They have lost %i times (%s%).", team1AllLossesLast10Years.length, team1AllLossesLast10YearsPercentage)
     console.log("There were %i draws (%s%).", team1AllResultsLast10Years.length - team1AllWinsLast10Years.length - team1AllLossesLast10Years.length, team1AllDrawsLast10YearsPercentage)
 
-     /**********************************
+    /**********************************
      * Analyze ALL matchups of Team 2 *
      **********************************/
 
@@ -180,12 +201,55 @@ async function run(){
     console.log("They have lost %i times (%s%).", team2AllLossesLast10Years.length, team2AllLossesLast10YearsPercentage)
     console.log("There were %i draws (%s%).", team2AllResultsLast10Years.length - team2AllWinsLast10Years.length - team2AllLossesLast10Years.length, team2AllDrawsLast10YearsPercentage)
 
+    /******************
+     * Recommendation *
+     ******************/
+
+    printHeadline("RECOMMENDATION")
+
+    console.log(program.team1.toUpperCase())
+    console.log("  All-Matchup Wins:", team1winsPercentage + "%")
+    if(totalMatchesLast10Years.length !== 0){   
+        console.log("  10y-Matchup Wins:", team1winsLast10YearsPercentage + "%")
+    }
+    console.log("  10y-Total   Wins:", team1AllWinsLast10YearsPercentage + "%")
+    const team1score = calcSecretSauceRecommendationScore(team1winsPercentage, team1winsLast10YearsPercentage, team1AllWinsLast10YearsPercentage)
+    console.log("WEIGHTED SUM: ", team1score + "%")
+
+    console.log("\n",program.team2.toUpperCase())
+    console.log("  All-Matchup Wins:", team2winsPercentage + "%")
+    if(totalMatchesLast10Years.length !== 0){   
+        console.log("  10y-Matchup Wins:", team2winsLast10YearsPercentage + "%")
+    }
+    console.log("  10y-Total   Wins:", team2AllWinsLast10YearsPercentage + "%")
+    const team2score = calcSecretSauceRecommendationScore(team2winsPercentage, team2winsLast10YearsPercentage, team2AllWinsLast10YearsPercentage)
+    console.log("WEIGHTED SUM: ", team2score + "%")
+
+    const recommededTeam = team1score > team2score ? program.team1 : program.team2
+
+    console.log("\nRECOMMENDATION: PICK " + recommededTeam.toUpperCase())
 }
 
-try{
-    run()
-} catch(e) {
-    console.error(e)
+function calcSecretSauceRecommendationScore(allMatchupWins, y10MatchupWins, y10TotalWins) {
+
+    // no 10yMatchupWins available
+    if(!y10MatchupWins) {
+        const weightAllMatchups = 0.3
+        const weighty10Total = 0.7
+
+        return parseInt(allMatchupWins) * weightAllMatchups 
+             + parseInt(y10TotalWins) * weighty10Total
+    }
+    // 10yMatchupWins are available
+    else {
+        const weightAllMatchups = 0.2
+        const weighty10Matchups = 0.5
+        const weighty10Total = 0.3
+
+        return parseInt(allMatchupWins) * weightAllMatchups 
+             + parseInt(y10MatchupWins) * weighty10Matchups
+             + parseInt(y10TotalWins) * weighty10Total
+    }
 }
 
 function printResultsTable(results){

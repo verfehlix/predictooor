@@ -3,9 +3,6 @@
   "version": "0.0.1",
   "description": "A small tool that analyzes soccer matches and gives a recommendation on which team to pick in a betting game",
   "main": "predictooor.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/verfehlix/predictooor.git"
