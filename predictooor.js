@@ -46,41 +46,47 @@ async function run(){
         e2 = e2.date.split('-')
         return e1[0] - e2[0] || e1[1] - e2[1] || e1[2] - e2[2]
     })
+    
+    printHeadline("DIRECT MATCHUPS")
 
-    console.log("Found %i direct matchup(s) between the two teams.", relevantResults.length)
-
+    let team1wins
+    let team2wins
+    let team1winsPercentage
+    let team2winsPercentage
+    let drawsPercentage
     // if no matchups were found, abort
     if(relevantResults.length === 0) {
-        return
+        console.log("Found NO direct matchup(s) between the two teams.")
+    } else {
+        console.log("Found %i direct matchup(s) between the two teams.", relevantResults.length)
+
+        
+        // print relevant results
+        printResultsTable(relevantResults)
+        
+        // analyze all matches
+        team1wins = relevantResults.filter(element => {
+            return (
+                (element.home_team === program.team1 && element.home_ft > element.away_ft) ||
+                (element.away_team === program.team1 && element.away_ft > element.home_ft)
+            )
+        })
+
+        team2wins = relevantResults.filter(element => {
+            return (
+                (element.home_team === program.team2 && element.home_ft > element.away_ft) ||
+                (element.away_team === program.team2 && element.away_ft > element.home_ft)
+            )
+        })
+
+        team1winsPercentage = ((team1wins.length / relevantResults.length)*100).toFixed(0)
+        team2winsPercentage = ((team2wins.length / relevantResults.length)*100).toFixed(0)
+        drawsPercentage = (((relevantResults.length - team1wins.length - team2wins.length) / relevantResults.length)*100).toFixed(0)
+
+        console.log("\n%s (Team 1) has won %i times (%s%).", program.team1, team1wins.length, team1winsPercentage)
+        console.log("%s (Team 2) has won %i times (%s%).", program.team2, team2wins.length, team2winsPercentage)
+        console.log("There were %i draws (%s%).", relevantResults.length - team1wins.length - team2wins.length, drawsPercentage)
     }
-
-    printHeadline("DIRECT MATCHUPS")
-    
-    // print relevant results
-    printResultsTable(relevantResults)
-    
-    // analyze all matches
-    const team1wins = relevantResults.filter(element => {
-        return (
-            (element.home_team === program.team1 && element.home_ft > element.away_ft) ||
-            (element.away_team === program.team1 && element.away_ft > element.home_ft)
-        )
-    })
-
-    const team2wins = relevantResults.filter(element => {
-        return (
-            (element.home_team === program.team2 && element.home_ft > element.away_ft) ||
-            (element.away_team === program.team2 && element.away_ft > element.home_ft)
-        )
-    })
-
-    const team1winsPercentage = ((team1wins.length / relevantResults.length)*100).toFixed(0)
-    const team2winsPercentage = ((team2wins.length / relevantResults.length)*100).toFixed(0)
-    const drawsPercentage = (((relevantResults.length - team1wins.length - team2wins.length) / relevantResults.length)*100).toFixed(0)
-
-    console.log("\n%s (Team 1) has won %i times (%s%).", program.team1, team1wins.length, team1winsPercentage)
-    console.log("%s (Team 2) has won %i times (%s%).", program.team2, team2wins.length, team2winsPercentage)
-    console.log("There were %i draws (%s%).", relevantResults.length - team1wins.length - team2wins.length, drawsPercentage)
 
     /************************************************
      * Analyze direct matchups in the last 10 years *
@@ -209,7 +215,9 @@ async function run(){
 
     console.log(program.team1.toUpperCase())
     console.log("-".repeat(program.team1.length))
-    console.log("  All-Matchup Wins:", team1winsPercentage + "%")
+    if(team1winsPercentage){   
+        console.log("  All-Matchup Wins:", team1winsPercentage + "%")
+    }
     if(totalMatchesLast10Years.length !== 0){   
         console.log("  10y-Matchup Wins:", team1winsLast10YearsPercentage + "%")
     }
@@ -220,7 +228,9 @@ async function run(){
 
     console.log("\n" + program.team2.toUpperCase())
     console.log("-".repeat(program.team2.length))
-    console.log("  All-Matchup Wins:", team2winsPercentage + "%")
+    if(team2winsPercentage){   
+        console.log("  All-Matchup Wins:", team2winsPercentage + "%")
+    }
     if(totalMatchesLast10Years.length !== 0){   
         console.log("  10y-Matchup Wins:", team2winsLast10YearsPercentage + "%")
     }
@@ -237,9 +247,14 @@ async function run(){
 // super secrect sauce recommendation score engine powered by big data distributed 
 // cloud computing on the blockchain enabling industry 4.0-grade soccer recommendations
 function calcSecretSauceRecommendationScore(allMatchupWins, y10MatchupWins, y10TotalWins) {
+    // no matchups at all available
+    if(!allMatchupWins){
+        const weighty10Total = 1
 
+        return parseInt (y10TotalWins) * weighty10Total
+    }
     // no 10yMatchupWins available
-    if(!y10MatchupWins) {
+    else if(!y10MatchupWins) {
         const weightAllMatchups = 0.3
         const weighty10Total = 0.7
 
