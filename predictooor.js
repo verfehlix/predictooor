@@ -208,28 +208,34 @@ async function run(){
     printHeadline("RECOMMENDATION")
 
     console.log(program.team1.toUpperCase())
+    console.log("-".repeat(program.team1.length))
     console.log("  All-Matchup Wins:", team1winsPercentage + "%")
     if(totalMatchesLast10Years.length !== 0){   
         console.log("  10y-Matchup Wins:", team1winsLast10YearsPercentage + "%")
     }
     console.log("  10y-Total   Wins:", team1AllWinsLast10YearsPercentage + "%")
     const team1score = calcSecretSauceRecommendationScore(team1winsPercentage, team1winsLast10YearsPercentage, team1AllWinsLast10YearsPercentage)
-    console.log("WEIGHTED SUM: ", (team1score).toFixed(0) + "%")
+    console.log("------------")
+    console.log("SCORE: ", (team1score).toFixed(0) + "%")
 
-    console.log("\n",program.team2.toUpperCase())
+    console.log("\n" + program.team2.toUpperCase())
+    console.log("-".repeat(program.team2.length))
     console.log("  All-Matchup Wins:", team2winsPercentage + "%")
     if(totalMatchesLast10Years.length !== 0){   
         console.log("  10y-Matchup Wins:", team2winsLast10YearsPercentage + "%")
     }
     console.log("  10y-Total   Wins:", team2AllWinsLast10YearsPercentage + "%")
     const team2score = calcSecretSauceRecommendationScore(team2winsPercentage, team2winsLast10YearsPercentage, team2AllWinsLast10YearsPercentage)
-    console.log("WEIGHTED SUM: ", (team2score).toFixed(0) + "%")
+    console.log("------------")
+    console.log("SCORE: ", (team2score).toFixed(0) + "%")
 
     const recommededTeam = team1score > team2score ? program.team1 : program.team2
 
-    console.log("\nRECOMMENDATION: PICK " + recommededTeam.toUpperCase())
+    printHeadline("RECOMMENDATION: PICK " + recommededTeam.toUpperCase())
 }
 
+// super secrect sauce recommendation score engine powered by big data distributed 
+// cloud computing on the blockchain enabling industry 4.0-grade soccer recommendations
 function calcSecretSauceRecommendationScore(allMatchupWins, y10MatchupWins, y10TotalWins) {
 
     // no 10yMatchupWins available
@@ -252,6 +258,7 @@ function calcSecretSauceRecommendationScore(allMatchupWins, y10MatchupWins, y10T
     }
 }
 
+// prints results tablularly
 function printResultsTable(results){
     results.forEach((element, i) => {
         let matchNr = i + 1 + ""
@@ -261,6 +268,7 @@ function printResultsTable(results){
     })
 }
 
+// prints big text with border (cool)
 function printHeadline(string){
     console.log("\n**" + "*".repeat(string.length) + "**")
     console.log("* " + string + " *")
