@@ -214,7 +214,7 @@ async function run(){
     }
     console.log("  10y-Total   Wins:", team1AllWinsLast10YearsPercentage + "%")
     const team1score = calcSecretSauceRecommendationScore(team1winsPercentage, team1winsLast10YearsPercentage, team1AllWinsLast10YearsPercentage)
-    console.log("WEIGHTED SUM: ", team1score + "%")
+    console.log("WEIGHTED SUM: ", (team1score).toFixed(0) + "%")
 
     console.log("\n",program.team2.toUpperCase())
     console.log("  All-Matchup Wins:", team2winsPercentage + "%")
@@ -223,7 +223,7 @@ async function run(){
     }
     console.log("  10y-Total   Wins:", team2AllWinsLast10YearsPercentage + "%")
     const team2score = calcSecretSauceRecommendationScore(team2winsPercentage, team2winsLast10YearsPercentage, team2AllWinsLast10YearsPercentage)
-    console.log("WEIGHTED SUM: ", team2score + "%")
+    console.log("WEIGHTED SUM: ", (team2score).toFixed(0) + "%")
 
     const recommededTeam = team1score > team2score ? program.team1 : program.team2
 
