@@ -1,6 +1,9 @@
 ![predictooor_image](https://user-images.githubusercontent.com/7032914/41287684-d98da9f8-6e43-11e8-8d9d-327cc82fba40.png)
 
 # predictooor
+
+![MIT Licence](https://badges.frapsoft.com/os/mit/mit.png?v=103)
+
 A small tool that analyzes soccer matches and gives a recommendation on which team to pick in a betting game 😎
 
 Data in ```results.csv``` and ```results.xslx``` comes from [Kaggle](https://www.kaggle.com/martj42/international-football-results-from-1872-to-2017/version/5).
