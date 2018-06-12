@@ -177,7 +177,7 @@ async function run(){
         return e1[0] - e2[0] || e1[1] - e2[1] || e1[2] - e2[2]
     })
 
-    console.log("%s (Team 1) played %i matches in the last 10 years.\n", program.team2, team2AllResultsLast10Years.length)
+    console.log("%s (Team 2) played %i matches in the last 10 years.\n", program.team2, team2AllResultsLast10Years.length)
 
     const team2AllWinsLast10Years = team2AllResultsLast10Years.filter(element => {
         return (

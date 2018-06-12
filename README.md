@@ -101,7 +101,7 @@ There were 24 draws (18%).
 * ALL RESULTS: ENGLAND - Last 10 years *
 ****************************************
 
-England (Team 1) played 108 matches in the last 10 years.
+England (Team 2) played 108 matches in the last 10 years.
 
 They have won 65 times (60%).
 They have lost 17 times (16%).
