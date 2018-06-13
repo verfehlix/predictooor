@@ -1,5 +1,4 @@
-![predictooor_image](https://user-images.githubusercontent.com/7032914/41287684-d98da9f8-6e43-11e8-8d9d-327cc82fba40.png)
-
+![predictooor_image](https://user-images.githubusercontent.com/7032914/41338488-9dc5a57e-6ef2-11e8-82af-6876709e739a.png)
 # predictooor
 
 ![MIT Licence](https://badges.frapsoft.com/os/mit/mit.png?v=103)
